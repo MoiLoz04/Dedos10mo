@@ -56,6 +56,9 @@ export default function Header({ onSearch }) {
             <a href="#soporte" className="hover:text-brand-500 transition-colors">
               Soporte
             </a>
+            <Link to='/vincular-movil' className='hover:text-brand-500 transition-colors'>
+  Vincular app
+</Link>
           </nav>
 
           {/* Buscador */}

@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>IndustrIA Mobile - Login</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=JetBrains+Mono:wght@700&display=swap" rel="stylesheet">
+  <style>
+    body {
+      background-color: #0B0D0F;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      margin: 0;
+      font-family: 'Inter', sans-serif;
+    }
+    .phone-frame {
+      width: 360px;
+      height: 800px;
+      background-color: #14171C;
+      border-radius: 32px;
+      border: 2px solid #2E3540;
+      box-sizing: border-box;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      padding: 24px;
+      color: #F7F7F4;
+      position: relative;
+    }
+    .status-bar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 12px;
+      color: #5B6470;
+      padding-top: 8px;
+    }
+    .punch-hole {
+      width: 12px;
+      height: 12px;
+      background-color: #000;
+      border-radius: 50%;
+    }
+    .main-content {
+      display: flex;
+      flex-direction: column;
+      gap: 24px;
+      margin-top: auto;
+      margin-bottom: auto;
+    }
+    .brand-title {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 24px;
+      font-weight: bold;
+      color: #22C55E;
+      margin: 0 0 8px 0;
+      text-align: center;
+    }
+    .brand-subtitle {
+      font-size: 14px;
+      color: #5B6470;
+      margin: 0;
+      text-align: center;
+    }
+    .field-group {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+    .label {
+      font-size: 12px;
+      color: #5B6470;
+      margin-bottom: 6px;
+      display: block;
+    }
+    .input-box {
+      width: 100%;
+      height: 52px;
+      background-color: #1C2128;
+      border: 1px solid #2E3540;
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      padding: 0 16px;
+      font-size: 14px;
+      color: #F7F7F4;
+      box-sizing: border-box;
+    }
+    .btn-primary {
+      width: 100%;
+      height: 52px;
+      background-color: #22C55E;
+      border: none;
+      border-radius: 12px;
+      color: #14171C;
+      font-weight: bold;
+      font-size: 14px;
+      cursor: pointer;
+    }
+    .gesture-bar-container {
+      display: flex;
+      justify-content: center;
+      padding-bottom: 8px;
+    }
+    .gesture-bar {
+      width: 108px;
+      height: 4px;
+      background-color: #F7F7F4;
+      border-radius: 2px;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="phone-frame">
+    <div class="status-bar">
+      <span>9:41</span>
+      <div class="punch-hole"></div>
+      <span>📶</span>
+    </div>
+
+    <div class="main-content">
+      <div>
+        <h1 class="brand-title">⚡ INDUSTrIA</h1>
+        <p class="brand-subtitle">Inicia sesión para ver tus cotizaciones</p>
+      </div>
+
+      <div class="field-group">
+        <div>
+          <label class="label">Correo</label>
+          <div class="input-box">operador@industria.com</div>
+        </div>
+        <div>
+          <label class="label">Contraseña</label>
+          <div class="input-box">••••••••••••</div>
+        </div>
+      </div>
+
+      <button class="btn-primary">ENTRAR</button>
+    </div>
+
+    <div class="gesture-bar-container">
+      <div class="gesture-bar"></div>
+    </div>
+  </div>
+
+</body>
+</html>

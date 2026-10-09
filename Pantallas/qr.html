@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>IndustrIA Mobile - 03 Escáner QR</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@700&display=swap" rel="stylesheet">
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+    body {
+      background-color: #0B0D0F;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      font-family: 'Inter', sans-serif;
+    }
+    .phone-frame {
+      width: 360px;
+      height: 800px;
+      background-color: #000000;
+      border-radius: 32px;
+      border: 2px solid #2E3540;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      padding: 24px;
+      color: #F7F7F4;
+      position: relative;
+      box-shadow: 0 20px 40px rgba(0,0,0,0.6);
+      overflow: hidden;
+    }
+    /* Camera Feed Background Effect */
+    .camera-preview {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: radial-gradient(circle, #1a202c 0%, #080a0c 100%);
+      z-index: 1;
+    }
+    .screen-overlay {
+      position: relative;
+      z-index: 2;
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+    }
+    /* Status Bar */
+    .status-bar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 12px;
+      color: #A0AEC0;
+      padding-top: 4px;
+    }
+    .camera-cutout {
+      width: 12px;
+      height: 12px;
+      background-color: #000000;
+      border-radius: 50%;
+    }
+    /* Header Bar */
+    .app-header {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 16px 0 8px 0;
+    }
+    .back-button {
+      font-size: 20px;
+      cursor: pointer;
+      color: #F7F7F4;
+    }
+    .header-title {
+      font-size: 16px;
+      font-weight: 600;
+      color: #F7F7F4;
+    }
+    /* Scanner Frame Container */
+    .scanner-body {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 24px;
+      margin-top: auto;
+      margin-bottom: auto;
+    }
+    .viewfinder {
+      width: 240px;
+      height: 240px;
+      border: 3px solid #22C55E;
+      border-radius: 20px;
+      box-shadow: 0 0 20px rgba(34, 197, 94, 0.3);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: rgba(34, 197, 94, 0.03);
+      position: relative;
+    }
+    .viewfinder-text {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 12px;
+      color: #22C55E;
+      opacity: 0.6;
+      letter-spacing: 1px;
+    }
+    .instruction-text {
+      font-size: 14px;
+      color: #F7F7F4;
+      background: rgba(28, 33, 40, 0.8);
+      padding: 8px 16px;
+      border-radius: 20px;
+      border: 1px solid #2E3540;
+    }
+    /* Gesture Bar */
+    .gesture-bar-wrapper {
+      display: flex;
+      justify-content: center;
+      padding-bottom: 4px;
+    }
+    .gesture-bar {
+      width: 108px;
+      height: 4px;
+      background-color: #F7F7F4;
+      border-radius: 2px;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="phone-frame">
+    <!-- Camera Preview Background -->
+    <div class="camera-preview"></div>
+
+    <div class="screen-overlay">
+      <!-- Status Bar -->
+      <div class="status-bar">
+        <span>9:41</span>
+        <div class="camera-cutout"></div>
+        <span>📶</span>
+      </div>
+
+      <!-- Header -->
+      <div class="app-header">
+        <span class="back-button">←</span>
+        <span class="header-title">Escanear actividad</span>
+      </div>
+
+      <!-- Viewfinder Center -->
+      <div class="scanner-body">
+        <div class="viewfinder">
+          <span class="viewfinder-text">[ VISTA PREVIA ]</span>
+        </div>
+        <div class="instruction-text">Coloca el código dentro del recuadro</div>
+      </div>
+
+      <!-- Gesture Bar -->
+      <div class="gesture-bar-wrapper">
+        <div class="gesture-bar"></div>
+      </div>
+    </div>
+  </div>
+
+</body>
+</html>

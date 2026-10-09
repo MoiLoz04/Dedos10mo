@@ -12,7 +12,7 @@ import QuoteForm from "./pages/QuoteForm";
 import History from "./pages/History";
 import Terminos from "./pages/Terminos";
 import Privacidad from "./pages/Privacidad";
-
+import LinkMobile from './pages/LinkMobile';
 
 function AppShell() {
   const [searchQuery, setSearchQuery] = useState("");
@@ -25,6 +25,7 @@ function AppShell() {
           <Route path="/" element={<Catalog searchQuery={searchQuery} />} />
           <Route path="/quote-form" element={<QuoteForm />} />
           <Route path="/historial" element={<History />} />
+          <Route path='/vincular-movil' element={<LinkMobile />} />
         </Routes>
       </main>
       <Footer />
