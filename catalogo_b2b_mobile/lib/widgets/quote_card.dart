@@ -9,18 +9,26 @@ class QuoteCard extends StatelessWidget {
 
   const QuoteCard({super.key, required this.quote, this.onTap});
 
-  String _fecha() {
-    final d = DateTime.tryParse('${quote['created_at'] ?? ''}')?.toLocal();
+  @visibleForTesting
+  static String formatFecha(Object? createdAt) {
+    final d = DateTime.tryParse('${createdAt ?? ''}')?.toLocal();
     if (d == null) return '';
     final dd = d.day.toString().padLeft(2, '0');
     final mm = d.month.toString().padLeft(2, '0');
     return '$dd/$mm/${d.year}';
   }
 
+  @visibleForTesting
+  static String origenLabel(Object? enviadoDesde) =>
+      enviadoDesde == 'watch' ? 'Smartwatch' : 'Web';
+
+  @visibleForTesting
+  static bool esEnviada(Object? status) => status == 'enviada';
+
   @override
   Widget build(BuildContext context) {
-    final enviada = quote['status'] == 'enviada';
-    final origen = quote['enviado_desde'] == 'watch' ? 'Smartwatch' : 'Web';
+    final enviada = esEnviada(quote['status']);
+    final origen = origenLabel(quote['enviado_desde']);
     final color = enviada ? AppColors.brand : AppColors.amber;
 
     return Card(
@@ -34,7 +42,7 @@ class QuoteCard extends StatelessWidget {
           style: GoogleFonts.jetBrainsMono(fontWeight: FontWeight.w600),
         ),
         subtitle: Text(
-          '${_fecha()} · $origen',
+          '${formatFecha(quote['created_at'])} · $origen',
           style: const TextStyle(color: AppColors.steel),
         ),
         trailing: Container(

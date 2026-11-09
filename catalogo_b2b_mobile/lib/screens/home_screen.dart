@@ -4,6 +4,7 @@ import '../services/supabase_service.dart';
 import '../theme.dart';
 import 'login_screen.dart';
 import 'qr_scanner_screen.dart';
+import 'transfer_test_screen.dart';
 
 class HomeScreen extends StatelessWidget {
   const HomeScreen({super.key});
@@ -93,6 +94,27 @@ class HomeScreen extends StatelessWidget {
                           padding: const EdgeInsets.symmetric(vertical: 14),
                         ),
                         child: const Text('Escanear código QR'),
+                      ),
+                    ),
+                    const SizedBox(height: 12),
+                    SizedBox(
+                      width: double.infinity,
+                      child: OutlinedButton.icon(
+                        icon: const Icon(
+                          Icons.swap_vert,
+                          color: AppColors.brand,
+                        ),
+                        label: const Text('Prueba de transferencia'),
+                        style: OutlinedButton.styleFrom(
+                          foregroundColor: Colors.white,
+                          side: const BorderSide(color: AppColors.steel),
+                          padding: const EdgeInsets.symmetric(vertical: 14),
+                        ),
+                        onPressed: () => Navigator.of(context).push(
+                          MaterialPageRoute(
+                            builder: (_) => const TransferTestScreen(),
+                          ),
+                        ),
                       ),
                     ),
                   ],
