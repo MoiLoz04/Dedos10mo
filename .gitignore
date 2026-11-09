@@ -5,3 +5,10 @@ build/
 .env
 catalogo-web/.env.example
 **/.env.example
+
+# Variables de entorno y credenciales
+.env
+.env.*
+!.env.example
+
+catalogo-web/.env.example

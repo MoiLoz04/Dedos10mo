@@ -1,3 +1,4 @@
+
 import {
   createContext,
   useContext,
@@ -10,19 +11,36 @@ import { useAuth } from "./AuthContext";
 
 const CartContext = createContext(null);
 
-/**
- * El "carrito" no vive en memoria del navegador: vive como una fila en
- * `quotes` con status = 'borrador' y sus `quote_items` asociados.
- * Esto es intencional: es lo que permite que el smartwatch (Fase 4),
- * suscrito por Realtime a la misma quote, vea los cambios sin polling,
- * y que un producto agregado desde la web aparezca de inmediato en el reloj.
- */
 export function CartProvider({ children }) {
   const { user } = useAuth();
+
   const [draftQuote, setDraftQuote] = useState(null);
   const [items, setItems] = useState([]);
   const [loading, setLoading] = useState(true);
 
+  // Consultar los productos del borrador.
+  const refreshItems = useCallback(async (quoteId) => {
+    if (!quoteId) {
+      setItems([]);
+      return [];
+    }
+
+    const { data, error } = await supabase
+      .from("quote_items")
+      .select("*")
+      .eq("quote_id", quoteId)
+      .order("created_at", { ascending: true });
+
+    if (error) {
+      console.error("Error consultando productos:", error);
+      throw error;
+    }
+
+    setItems(data || []);
+    return data || [];
+  }, []);
+
+  // Recuperar o crear el borrador.
   const loadOrCreateDraft = useCallback(async () => {
     if (!user) {
       setDraftQuote(null);
@@ -30,129 +48,211 @@ export function CartProvider({ children }) {
       setLoading(false);
       return;
     }
+
     setLoading(true);
 
-    let { data: existing } = await supabase
-      .from("quotes")
-      .select("*")
-      .eq("user_id", user.id)
-      .eq("status", "borrador")
-      .order("created_at", { ascending: false })
-      .limit(1)
-      .maybeSingle();
+    try {
+      const { data: existing, error: searchError } =
+        await supabase
+          .from("quotes")
+          .select("*")
+          .eq("user_id", user.id)
+          .eq("status", "borrador")
+          .order("created_at", { ascending: false })
+          .limit(1)
+          .maybeSingle();
 
-    if (!existing) {
-      const { data: created, error } = await supabase
-        .from("quotes")
-        .insert({ user_id: user.id, status: "borrador", enviado_desde: "web" })
-        .select()
-        .single();
-      if (error) {
-        console.error("Error creando borrador de cotización:", error);
-        setLoading(false);
-        return;
+      if (searchError) throw searchError;
+
+      let quote = existing;
+
+      if (!quote) {
+        const { data: created, error: createError } =
+          await supabase
+            .from("quotes")
+            .insert({
+              user_id: user.id,
+              status: "borrador",
+              enviado_desde: "web",
+            })
+            .select()
+            .single();
+
+        if (createError) throw createError;
+
+        quote = created;
       }
-      existing = created;
+
+      setDraftQuote(quote);
+      await refreshItems(quote.id);
+
+      return quote;
+    } catch (error) {
+      console.error(
+        "Error cargando borrador de cotización:",
+        error
+      );
+      throw error;
+    } finally {
+      setLoading(false);
     }
-
-    setDraftQuote(existing);
-
-    const { data: quoteItems } = await supabase
-      .from("quote_items")
-      .select("*")
-      .eq("quote_id", existing.id)
-      .order("created_at", { ascending: true });
-
-    setItems(quoteItems || []);
-    setLoading(false);
-  }, [user]);
+  }, [user?.id, refreshItems]);
 
   useEffect(() => {
-    loadOrCreateDraft();
+    loadOrCreateDraft().catch(console.error);
   }, [loadOrCreateDraft]);
 
-  // Suscripción Realtime: si el item cambia desde otro origen (ej. el
-  // smartwatch ajusta cantidades), la web se actualiza sin recargar.
+  // Mantener sincronización con cambios externos.
   useEffect(() => {
-    if (!draftQuote) return;
+    if (!draftQuote?.id) return;
+
+    const quoteId = draftQuote.id;
 
     const channel = supabase
-      .channel(`quote_items_${draftQuote.id}`)
+      .channel(`quote_items_${quoteId}`)
       .on(
         "postgres_changes",
         {
           event: "*",
           schema: "public",
           table: "quote_items",
-          filter: `quote_id=eq.${draftQuote.id}`,
+          filter: `quote_id=eq.${quoteId}`,
         },
         () => {
-          supabase
-            .from("quote_items")
-            .select("*")
-            .eq("quote_id", draftQuote.id)
-            .order("created_at", { ascending: true })
-            .then(({ data }) => setItems(data || []));
+          refreshItems(quoteId).catch(console.error);
         }
       )
       .subscribe();
 
-    return () => supabase.removeChannel(channel);
-  }, [draftQuote]);
+    return () => {
+      supabase.removeChannel(channel);
+    };
+  }, [draftQuote?.id, refreshItems]);
 
+  // Agregar producto.
   async function addToCart(product) {
-    if (!draftQuote) return;
-    const existing = items.find((i) => i.product_id === product.id);
+    if (!draftQuote) {
+      throw new Error("No existe un borrador activo.");
+    }
+
+    const existing = items.find(
+      (item) => item.product_id === product.id
+    );
 
     if (existing) {
-      await supabase
+      const { error } = await supabase
         .from("quote_items")
-        .update({ cantidad: existing.cantidad + 1 })
-        .eq("id", existing.id);
+        .update({
+          cantidad: existing.cantidad + 1,
+        })
+        .eq("id", existing.id)
+        .eq("quote_id", draftQuote.id);
+
+      if (error) throw error;
     } else {
-      await supabase.from("quote_items").insert({
-        quote_id: draftQuote.id,
-        product_id: product.id,
-        nombre_producto: product.nombre,
-        cantidad: 1,
-      });
+      const { error } = await supabase
+        .from("quote_items")
+        .insert({
+          quote_id: draftQuote.id,
+          product_id: product.id,
+          nombre_producto: product.nombre,
+          cantidad: 1,
+        });
+
+      if (error) throw error;
     }
+
+    await refreshItems(draftQuote.id);
   }
 
+  // Modificar cantidad.
   async function updateQuantity(itemId, cantidad) {
-    if (cantidad <= 0) return removeItem(itemId);
-    await supabase.from("quote_items").update({ cantidad }).eq("id", itemId);
+    if (!draftQuote) return;
+
+    if (cantidad <= 0) {
+      return removeItem(itemId);
+    }
+
+    const { error } = await supabase
+      .from("quote_items")
+      .update({ cantidad })
+      .eq("id", itemId)
+      .eq("quote_id", draftQuote.id);
+
+    if (error) throw error;
+
+    await refreshItems(draftQuote.id);
   }
 
+  // Eliminar producto.
   async function removeItem(itemId) {
-    await supabase.from("quote_items").delete().eq("id", itemId);
+    if (!draftQuote) return;
+
+    const { data, error } = await supabase
+      .from("quote_items")
+      .delete()
+      .eq("id", itemId)
+      .eq("quote_id", draftQuote.id)
+      .select("id");
+
+    if (error) {
+      console.error("Error eliminando producto:", error);
+      throw error;
+    }
+
+    if (!data || data.length === 0) {
+      throw new Error(
+        "No se eliminó el producto. Revisa los permisos de Supabase."
+      );
+    }
+
+    // Actualizar inmediatamente el estado de React.
+    setItems((previous) =>
+      previous.filter((item) => item.id !== itemId)
+    );
+
+    // Confirmar el estado real de la base de datos.
+    await refreshItems(draftQuote.id);
   }
 
+  // Enviar cotización.
   async function submitQuote({ instrucciones_default }) {
-    if (!draftQuote) return null;
+    if (!draftQuote) {
+      throw new Error("No existe una cotización activa.");
+    }
 
     if (instrucciones_default !== undefined && user) {
-      await supabase
+      const { error: profileError } = await supabase
         .from("profiles")
         .update({ instrucciones_default })
         .eq("id", user.id);
+
+      if (profileError) throw profileError;
     }
 
     const { data, error } = await supabase
       .from("quotes")
       .update({ status: "enviada" })
       .eq("id", draftQuote.id)
+      .eq("user_id", user.id)
       .select()
       .single();
 
     if (error) throw error;
 
-    // Después de enviar, arrancamos un borrador nuevo y vacío
+    setDraftQuote(null);
+    setItems([]);
+
+    // Crear un nuevo borrador vacío.
     await loadOrCreateDraft();
+
     return data;
   }
 
-  const totalItems = items.reduce((acc, i) => acc + i.cantidad, 0);
+  const totalItems = items.reduce(
+    (total, item) => total + item.cantidad,
+    0
+  );
 
   return (
     <CartContext.Provider
@@ -165,6 +265,7 @@ export function CartProvider({ children }) {
         updateQuantity,
         removeItem,
         submitQuote,
+        refreshItems,
       }}
     >
       {children}
