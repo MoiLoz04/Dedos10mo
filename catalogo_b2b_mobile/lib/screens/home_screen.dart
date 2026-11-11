@@ -5,6 +5,7 @@ import '../theme.dart';
 import 'login_screen.dart';
 import 'qr_scanner_screen.dart';
 import 'transfer_test_screen.dart';
+import 'support_screen.dart';
 
 class HomeScreen extends StatelessWidget {
   const HomeScreen({super.key});
@@ -113,6 +114,27 @@ class HomeScreen extends StatelessWidget {
                         onPressed: () => Navigator.of(context).push(
                           MaterialPageRoute(
                             builder: (_) => const TransferTestScreen(),
+                          ),
+                        ),
+                      ),
+                    ),
+                    const SizedBox(height: 12),
+                    SizedBox(
+                      width: double.infinity,
+                      child: OutlinedButton.icon(
+                        icon: const Icon(
+                          Icons.support_agent,
+                          color: AppColors.brand,
+                        ),
+                        label: const Text('Soporte'),
+                        style: OutlinedButton.styleFrom(
+                          foregroundColor: Colors.white,
+                          side: const BorderSide(color: AppColors.steel),
+                          padding: const EdgeInsets.symmetric(vertical: 14),
+                        ),
+                        onPressed: () => Navigator.of(context).push(
+                          MaterialPageRoute(
+                            builder: (_) => const SupportScreen(),
                           ),
                         ),
                       ),

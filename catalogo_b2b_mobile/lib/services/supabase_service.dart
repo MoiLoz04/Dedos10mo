@@ -1,5 +1,7 @@
 import 'package:supabase_flutter/supabase_flutter.dart';
 
+import 'dart:typed_data';
+
 const String supabaseUrl = 'https://psgyneqlcxzecujbfrdh.supabase.co';
 const String supabaseAnonKey = 'sb_publishable_ksDm1BMx4kkFbbx-0cAMEA_QKVaK97s';
 
@@ -62,4 +64,74 @@ class SupabaseService {
         .order('created_at', ascending: true);
     return List<Map<String, dynamic>>.from(res);
   }
+
+  // ===== SOPORTE =====
+  Future<Map<String, dynamic>> fetchMyProfile() async {
+    return await client
+        .from('profiles')
+        .select('role,nombre_completo')
+        .eq('id', currentUserId!)
+        .single();
+  }
+
+  /// RLS ya filtra: usuario = suyos, agente = asignados, admin = todos.
+  Future<List<Map<String, dynamic>>> fetchTickets() async {
+    final res = await client
+        .from('support_tickets')
+        .select()
+        .order('created_at', ascending: false);
+    return List<Map<String, dynamic>>.from(res);
+  }
+
+  Stream<List<Map<String, dynamic>>> ticketsStream() => client
+      .from('support_tickets')
+      .stream(primaryKey: ['id'])
+      .order('created_at', ascending: false);
+  Future<Map<String, dynamic>> createTicket(Map<String, dynamic> t) =>
+      client.from('support_tickets').insert(t).select().single();
+
+  Stream<List<Map<String, dynamic>>> messagesStream(String ticketId) => client
+      .from('support_messages')
+      .stream(primaryKey: ['id'])
+      .eq('ticket_id', ticketId)
+      .order('created_at');
+
+  Future<void> sendMessage(
+    String ticketId,
+    String texto,
+    String nombre,
+    String rol,
+  ) => client.from('support_messages').insert({
+    'ticket_id': ticketId,
+    'contenido': texto.trim(),
+    'sender_name': nombre,
+    'sender_role': rol,
+  });
+
+  Future<void> sendFile(
+    String ticketId,
+    String fileName,
+    List<int> bytes,
+    String nombre,
+    String rol,
+  ) async {
+    final limpio = fileName.replaceAll(RegExp(r'[^\w.\-]'), '_');
+    final path = '$ticketId/${DateTime.now().millisecondsSinceEpoch}_$limpio';
+    await client.storage
+        .from('support-files')
+        .uploadBinary(path, Uint8List.fromList(bytes));
+    await client.from('support_messages').insert({
+      'ticket_id': ticketId,
+      'archivo_path': path,
+      'contenido': fileName,
+      'sender_name': nombre,
+      'sender_role': rol,
+    });
+  }
+
+  Future<String> signedUrl(String path) =>
+      client.storage.from('support-files').createSignedUrl(path, 60);
+
+  Future<void> clearHistory(String ticketId) =>
+      client.from('support_messages').delete().eq('ticket_id', ticketId);
 }
