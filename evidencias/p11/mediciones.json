@@ -1,0 +1,662 @@
+{
+  "meta": {
+    "fecha": "2026-11-12T05:32:54.620Z",
+    "equipo": "MoiLoz",
+    "so": "win32 10.0.26200",
+    "node": "v24.19.0",
+    "servidor": "psgyneqlcxzecujbfrdh.supabase.co",
+    "conexion": "Wi-Fi casa"
+  },
+  "casos": [
+    {
+      "id": "WEB-01-login",
+      "desc": "Login correcto (POST /auth/v1/token)",
+      "esperado": "200",
+      "observado": 200,
+      "resultado": "COINCIDE",
+      "ms": 1049,
+      "bytes": 1953,
+      "forma": "",
+      "codigo": "",
+      "nota": ""
+    },
+    {
+      "id": "WEB-02-login",
+      "desc": "Login con contraseña incorrecta",
+      "esperado": "400",
+      "observado": 400,
+      "resultado": "COINCIDE",
+      "ms": 195,
+      "bytes": 81,
+      "forma": "code,error_code,msg",
+      "codigo": 400,
+      "nota": ""
+    },
+    {
+      "id": "WEB-01a",
+      "desc": "GET quotes propias (token válido)",
+      "esperado": "200",
+      "observado": 200,
+      "resultado": "COINCIDE",
+      "ms": 627,
+      "bytes": 1270,
+      "forma": "",
+      "codigo": "",
+      "nota": ""
+    },
+    {
+      "id": "WEB-01b",
+      "desc": "GET products (catálogo)",
+      "esperado": "200",
+      "observado": 200,
+      "resultado": "COINCIDE",
+      "ms": 295,
+      "bytes": 552,
+      "forma": "",
+      "codigo": "",
+      "nota": ""
+    },
+    {
+      "id": "WEB-01c",
+      "desc": "POST quotes (crear borrador)",
+      "esperado": "201",
+      "observado": 201,
+      "resultado": "COINCIDE",
+      "ms": 410,
+      "bytes": 211,
+      "forma": "",
+      "codigo": "",
+      "nota": ""
+    },
+    {
+      "id": "DB-01a",
+      "desc": "INSERT quote_items válido",
+      "esperado": "201",
+      "observado": 201,
+      "resultado": "COINCIDE",
+      "ms": 110,
+      "bytes": 207,
+      "forma": "",
+      "codigo": "",
+      "nota": ""
+    },
+    {
+      "id": "WEB-02a",
+      "desc": "GET sin apikey",
+      "esperado": "401",
+      "observado": 401,
+      "resultado": "COINCIDE",
+      "ms": 96,
+      "bytes": 101,
+      "forma": "hint,message",
+      "codigo": "",
+      "nota": ""
+    },
+    {
+      "id": "WEB-02b",
+      "desc": "GET con JWT inválido",
+      "esperado": "401",
+      "observado": 401,
+      "resultado": "COINCIDE",
+      "ms": 307,
+      "bytes": 93,
+      "forma": "code,details,hint,message",
+      "codigo": "PGRST301",
+      "nota": ""
+    },
+    {
+      "id": "WEB-02c",
+      "desc": "GET quotes con id que no es UUID",
+      "esperado": "400",
+      "observado": 400,
+      "resultado": "COINCIDE",
+      "ms": 203,
+      "bytes": 106,
+      "forma": "code,details,hint,message",
+      "codigo": "22P02",
+      "nota": ""
+    },
+    {
+      "id": "WEB-02d",
+      "desc": "GET single (objeto) de id inexistente",
+      "esperado": "406",
+      "observado": 406,
+      "resultado": "COINCIDE",
+      "ms": 146,
+      "bytes": 131,
+      "forma": "code,details,hint,message",
+      "codigo": "PGRST116",
+      "nota": "PostgREST usa 406 (PGRST116) y no 404 cuando .single() no encuentra filas"
+    },
+    {
+      "id": "WEB-02e",
+      "desc": "GET tabla inexistente",
+      "esperado": "404",
+      "observado": 404,
+      "resultado": "COINCIDE",
+      "ms": 170,
+      "bytes": 132,
+      "forma": "code,details,hint,message",
+      "codigo": "PGRST205",
+      "nota": ""
+    },
+    {
+      "id": "WEB-02f",
+      "desc": "POST quote_items hacia cotización ajena/inexistente (RLS)",
+      "esperado": "403",
+      "observado": 403,
+      "resultado": "COINCIDE",
+      "ms": 113,
+      "bytes": 124,
+      "forma": "code,details,hint,message",
+      "codigo": "42501",
+      "nota": ""
+    },
+    {
+      "id": "WEB-02g",
+      "desc": "POST quotes con user_id de otra persona (RLS)",
+      "esperado": "401/403",
+      "observado": 403,
+      "resultado": "COINCIDE",
+      "ms": 194,
+      "bytes": 119,
+      "forma": "code,details,hint,message",
+      "codigo": "42501",
+      "nota": ""
+    },
+    {
+      "id": "WEB-02h",
+      "desc": "POST qr_sessions (token nuevo)",
+      "esperado": "201",
+      "observado": 201,
+      "resultado": "COINCIDE",
+      "ms": 181,
+      "bytes": 0,
+      "forma": "",
+      "codigo": "",
+      "nota": ""
+    },
+    {
+      "id": "WEB-02i",
+      "desc": "POST qr_sessions con token duplicado (UNIQUE)",
+      "esperado": "409",
+      "observado": 409,
+      "resultado": "COINCIDE",
+      "ms": 116,
+      "bytes": 128,
+      "forma": "code,details,hint,message",
+      "codigo": "23505",
+      "nota": ""
+    },
+    {
+      "id": "WEB-02j",
+      "desc": "Códigos 422 y 500: PostgREST no los emite en estas operaciones",
+      "esperado": "422/500",
+      "observado": "-",
+      "resultado": "NO EJECUTADO",
+      "ms": 0,
+      "bytes": 0,
+      "forma": "",
+      "codigo": "",
+      "nota": "Justificado: PostgREST no los emite aquí; alternativa = validar con RPC/Edge Function"
+    },
+    {
+      "id": "DB-02a",
+      "desc": "INSERT quote_items con cantidad = 0 (CHECK)",
+      "esperado": "400",
+      "observado": 400,
+      "resultado": "COINCIDE",
+      "ms": 108,
+      "bytes": 149,
+      "forma": "code,details,hint,message",
+      "codigo": "23514",
+      "nota": ""
+    },
+    {
+      "id": "DB-02b",
+      "desc": "INSERT quote_items sin nombre_producto (NOT NULL)",
+      "esperado": "400",
+      "observado": 400,
+      "resultado": "COINCIDE",
+      "ms": 206,
+      "bytes": 153,
+      "forma": "code,details,hint,message",
+      "codigo": "23502",
+      "nota": ""
+    },
+    {
+      "id": "DB-02c",
+      "desc": "PATCH quotes con status inválido 'x' (CHECK)",
+      "esperado": "400",
+      "observado": 400,
+      "resultado": "COINCIDE",
+      "ms": 205,
+      "bytes": 137,
+      "forma": "code,details,hint,message",
+      "codigo": "23514",
+      "nota": ""
+    },
+    {
+      "id": "DB-03a",
+      "desc": "SELECT quote_items por id existente",
+      "esperado": "200",
+      "observado": 200,
+      "resultado": "COINCIDE",
+      "ms": 149,
+      "bytes": 207,
+      "forma": "",
+      "codigo": "",
+      "nota": "filas: 1 (esperado 1)"
+    },
+    {
+      "id": "DB-03b",
+      "desc": "SELECT quote_items por id inexistente",
+      "esperado": "200",
+      "observado": 200,
+      "resultado": "COINCIDE",
+      "ms": 166,
+      "bytes": 2,
+      "forma": "",
+      "codigo": "",
+      "nota": "filas: 0 (esperado 0: 200 con lista vacía, no 404)"
+    },
+    {
+      "id": "DB-04a",
+      "desc": "PATCH quote_items cantidad=5",
+      "esperado": "200",
+      "observado": 200,
+      "resultado": "COINCIDE",
+      "ms": 291,
+      "bytes": 207,
+      "forma": "",
+      "codigo": "",
+      "nota": ""
+    },
+    {
+      "id": "DB-04b",
+      "desc": "Releer tras actualizar (persistencia)",
+      "esperado": "200",
+      "observado": 200,
+      "resultado": "COINCIDE",
+      "ms": 109,
+      "bytes": 16,
+      "forma": "",
+      "codigo": "",
+      "nota": "cantidad leída: 5 (esperado 5)"
+    },
+    {
+      "id": "DB-06a",
+      "desc": "Dos PATCH simultáneos al mismo item",
+      "esperado": "200",
+      "observado": 200,
+      "resultado": "COINCIDE",
+      "ms": 94,
+      "bytes": 208,
+      "forma": "",
+      "codigo": "",
+      "nota": "HTTP 200 y 200; valor final = 22 (gana la última escritura, sin control de versión)"
+    },
+    {
+      "id": "DB-06b",
+      "desc": "Dos reclamos simultáneos del mismo QR: debe ganar exactamente 1",
+      "esperado": "200",
+      "observado": 200,
+      "resultado": "COINCIDE",
+      "ms": 210,
+      "bytes": 276,
+      "forma": "",
+      "codigo": "",
+      "nota": "ganadores = 1 (esperado 1)"
+    },
+    {
+      "id": "DB-05a",
+      "desc": "DELETE quote_items",
+      "esperado": "204",
+      "observado": 204,
+      "resultado": "COINCIDE",
+      "ms": 112,
+      "bytes": 0,
+      "forma": "",
+      "codigo": "",
+      "nota": ""
+    },
+    {
+      "id": "DB-05b",
+      "desc": "Releer tras eliminar",
+      "esperado": "200",
+      "observado": 200,
+      "resultado": "COINCIDE",
+      "ms": 191,
+      "bytes": 2,
+      "forma": "",
+      "codigo": "",
+      "nota": "filas: 0 (esperado 0)"
+    },
+    {
+      "id": "WEB-03a",
+      "desc": "Backend permite ENVIAR una cotización SIN productos (D-06)",
+      "esperado": "400/403/409/422",
+      "observado": 200,
+      "resultado": "DIFIERE",
+      "ms": 106,
+      "bytes": 210,
+      "forma": "",
+      "codigo": "",
+      "nota": "Si observas 200: la regla solo existe en el frontend"
+    },
+    {
+      "id": "WEB-03b",
+      "desc": "Backend permite EDITAR items de una cotización ya enviada (D-06)",
+      "esperado": "400/403/409/422",
+      "observado": 200,
+      "resultado": "DIFIERE",
+      "ms": 207,
+      "bytes": 209,
+      "forma": "",
+      "codigo": "",
+      "nota": "Si observas 200: no hay candado por estado"
+    },
+    {
+      "id": "WEB-03c",
+      "desc": "Backend acepta teléfono 'no-es-telefono'",
+      "esperado": "400/422",
+      "observado": 200,
+      "resultado": "DIFIERE",
+      "ms": 105,
+      "bytes": 220,
+      "forma": "",
+      "codigo": "",
+      "nota": "Si observas 200: sin validación de formato"
+    },
+    {
+      "id": "WEB-04a",
+      "desc": "Anónimo (solo apikey) consulta quotes: RLS devuelve lista vacía",
+      "esperado": "200",
+      "observado": 200,
+      "resultado": "COINCIDE",
+      "ms": 101,
+      "bytes": 2,
+      "forma": "",
+      "codigo": "",
+      "nota": ""
+    },
+    {
+      "id": "WEB-04b",
+      "desc": "GET profiles sin filtro: solo debe verse el propio",
+      "esperado": "200",
+      "observado": 200,
+      "resultado": "COINCIDE",
+      "ms": 104,
+      "bytes": 64,
+      "forma": "",
+      "codigo": "",
+      "nota": "filas: 1 (esperado 1)"
+    },
+    {
+      "id": "WEB-04c",
+      "desc": "GET support_tickets: no deben aparecer tickets ajenos (rol usuario)",
+      "esperado": "200",
+      "observado": 200,
+      "resultado": "COINCIDE",
+      "ms": 204,
+      "bytes": 194,
+      "forma": "",
+      "codigo": "",
+      "nota": "filas: 2; ajenos: 0 (esperado 0)"
+    },
+    {
+      "id": "WEB-04d",
+      "desc": "Usuario intenta cambiarse role a admin (D-01)",
+      "esperado": "400/401/403",
+      "observado": 403,
+      "resultado": "COINCIDE",
+      "ms": 103,
+      "bytes": 195,
+      "forma": "code,details,hint,message",
+      "codigo": "42501",
+      "nota": "protegido"
+    }
+  ],
+  "diez": [
+    {
+      "status": 200,
+      "ms": 125.6908999999996,
+      "bytes": 1270
+    },
+    {
+      "status": 200,
+      "ms": 180.8848999999991,
+      "bytes": 1270
+    },
+    {
+      "status": 200,
+      "ms": 104.76230000000032,
+      "bytes": 1270
+    },
+    {
+      "status": 200,
+      "ms": 101.50300000000061,
+      "bytes": 1270
+    },
+    {
+      "status": 200,
+      "ms": 108.9385999999995,
+      "bytes": 1270
+    },
+    {
+      "status": 200,
+      "ms": 104.22469999999885,
+      "bytes": 1270
+    },
+    {
+      "status": 200,
+      "ms": 93.85499999999956,
+      "bytes": 1270
+    },
+    {
+      "status": 200,
+      "ms": 105.32040000000052,
+      "bytes": 1270
+    },
+    {
+      "status": 200,
+      "ms": 99.18359999999848,
+      "bytes": 1270
+    },
+    {
+      "status": 200,
+      "ms": 85.6839,
+      "bytes": 1270
+    }
+  ],
+  "sDiez": {
+    "n": 10,
+    "avg": 111.00472999999965,
+    "min": 85.6839,
+    "max": 180.8848999999991,
+    "sd": 26.636897230806476,
+    "p95": 180.8848999999991
+  },
+  "desc": [
+    {
+      "i": 1,
+      "status": 200,
+      "bytes": 3874,
+      "s": 0.11975860000000102,
+      "mbps": 0.258787260372113
+    },
+    {
+      "i": 2,
+      "status": 200,
+      "bytes": 3874,
+      "s": 0.10034560000000056,
+      "mbps": 0.30885260539575055
+    },
+    {
+      "i": 3,
+      "status": 200,
+      "bytes": 3874,
+      "s": 0.10314220000000023,
+      "mbps": 0.3004783686987473
+    }
+  ],
+  "subida": [
+    {
+      "i": 1,
+      "status": 201,
+      "bytes": 200124,
+      "s": 0.304752199999999,
+      "mbps": 5.253422288666022
+    },
+    {
+      "i": 2,
+      "status": 201,
+      "bytes": 200124,
+      "s": 0.3042340999999997,
+      "mbps": 5.262368682537565
+    },
+    {
+      "i": 3,
+      "status": 201,
+      "bytes": 200124,
+      "s": 0.31253629999999977,
+      "mbps": 5.122579361181409
+    }
+  ],
+  "carga": [
+    {
+      "nombre": "LECTURA GET quotes",
+      "conc": 1,
+      "total": 20,
+      "ok": 20,
+      "fail": 0,
+      "codes": {
+        "200": 20
+      },
+      "n": 20,
+      "avg": 112.68850499999971,
+      "min": 92.0030999999999,
+      "max": 203.79209999999875,
+      "sd": 27.254488015244785,
+      "p95": 169.32899999999972,
+      "wall": 2.2542943999999987,
+      "rps": 8.871955677128955,
+      "mbps": 0.09013906967963019,
+      "cpuCliente": 3.5044224924659377
+    },
+    {
+      "nombre": "LECTURA GET quotes",
+      "conc": 5,
+      "total": 20,
+      "ok": 20,
+      "fail": 0,
+      "codes": {
+        "200": 20
+      },
+      "n": 20,
+      "avg": 161.65473999999995,
+      "min": 97.95719999999892,
+      "max": 339.7453000000005,
+      "sd": 81.94770838394088,
+      "p95": 328.8119999999999,
+      "wall": 0.7182739000000001,
+      "rps": 27.844531173971372,
+      "mbps": 0.28290043672754916,
+      "cpuCliente": 10.859367157848835
+    },
+    {
+      "nombre": "LECTURA GET quotes",
+      "conc": 10,
+      "total": 20,
+      "ok": 20,
+      "fail": 0,
+      "codes": {
+        "200": 20
+      },
+      "n": 20,
+      "avg": 182.67837500000005,
+      "min": 95.08749999999964,
+      "max": 337.1472999999987,
+      "sd": 88.99649924649505,
+      "p95": 315.03880000000026,
+      "wall": 0.4242276999999995,
+      "rps": 47.144493393524336,
+      "mbps": 0.4789880528782073,
+      "cpuCliente": 25.693748899470766
+    },
+    {
+      "nombre": "ESCRITURA POST quotes",
+      "conc": 1,
+      "total": 20,
+      "ok": 20,
+      "fail": 0,
+      "codes": {
+        "201": 20
+      },
+      "n": 20,
+      "avg": 106.60301499999996,
+      "min": 93.90380000000005,
+      "max": 185.89429999999993,
+      "sd": 19.057097532202228,
+      "p95": 111.00870000000032,
+      "wall": 2.132845800000001,
+      "rps": 9.377142970204405,
+      "mbps": 0.02271894198821123,
+      "cpuCliente": 3.657085758379718
+    },
+    {
+      "nombre": "ESCRITURA POST quotes",
+      "conc": 5,
+      "total": 20,
+      "ok": 20,
+      "fail": 0,
+      "codes": {
+        "201": 20
+      },
+      "n": 20,
+      "avg": 115.00546500000019,
+      "min": 77.79499999999825,
+      "max": 174.27960000000166,
+      "sd": 25.764692165039758,
+      "p95": 157.28080000000045,
+      "wall": 0.5119910999999993,
+      "rps": 39.06317902791675,
+      "mbps": 0.09465789542044788,
+      "cpuCliente": 15.429955716027118
+    },
+    {
+      "nombre": "ESCRITURA POST quotes",
+      "conc": 10,
+      "total": 20,
+      "ok": 20,
+      "fail": 0,
+      "codes": {
+        "201": 20
+      },
+      "n": 20,
+      "avg": 115.55517999999992,
+      "min": 97.55229999999938,
+      "max": 205.51629999999932,
+      "sd": 31.191241794496392,
+      "p95": 204.40680000000066,
+      "wall": 0.3042249000000011,
+      "rps": 65.74083843893096,
+      "mbps": 0.15927690336984196,
+      "cpuCliente": 25.310222798988423
+    }
+  ],
+  "sinEjecutar": [
+    {
+      "id": "WEB-02j",
+      "desc": "Códigos 422 y 500: PostgREST no los emite en estas operaciones",
+      "esperado": "422/500",
+      "observado": "-",
+      "resultado": "NO EJECUTADO",
+      "ms": 0,
+      "bytes": 0,
+      "forma": "",
+      "codigo": "",
+      "nota": "Justificado: PostgREST no los emite aquí; alternativa = validar con RPC/Edge Function"
+    }
+  ]
+}

@@ -3,6 +3,7 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 
 import '../services/supabase_service.dart';
 import '../theme.dart';
+import '../utils/ticket_validator.dart';
 
 class NewTicketScreen extends StatefulWidget {
   const NewTicketScreen({super.key});
@@ -29,8 +30,14 @@ class _NewTicketScreenState extends State<NewTicketScreen> {
   }
 
   Future<void> _crear() async {
-    if (_equipo.text.trim().isEmpty || _desc.text.trim().isEmpty) {
-      setState(() => _error = 'Equipo y descripción son obligatorios');
+    // P11: la validación y el armado del payload ahora viven en TicketValidator
+    // (misma lógica de antes, pero probable con pruebas unitarias).
+    final errorValidacion = TicketValidator.validar(
+      equipo: _equipo.text,
+      descripcion: _desc.text,
+    );
+    if (errorValidacion != null) {
+      setState(() => _error = errorValidacion);
       return;
     }
     setState(() {
@@ -38,24 +45,18 @@ class _NewTicketScreenState extends State<NewTicketScreen> {
       _error = null;
     });
     try {
-      final payload = <String, dynamic>{
-        'tipo': _tipo,
-        'equipo': _equipo.text.trim(),
-        'descripcion': _desc.text.trim(),
-        'prioridad': _prioridad,
-      };
-      if (_ref.text.trim().isNotEmpty) {
-        payload['referencia'] = _ref.text.trim().toUpperCase();
-      }
+      final payload = TicketValidator.construirPayload(
+        tipo: _tipo,
+        equipo: _equipo.text,
+        descripcion: _desc.text,
+        prioridad: _prioridad,
+        referencia: _ref.text,
+      );
       await SupabaseService.instance.createTicket(payload);
       if (!mounted) return;
       Navigator.of(context).pop(true);
     } on PostgrestException catch (e) {
-      setState(
-        () => _error = e.code == '23505'
-            ? 'Ese ID ya existe'
-            : 'No se pudo crear el caso',
-      );
+      setState(() => _error = TicketValidator.mensajeParaError(e.code));
     } catch (_) {
       setState(() => _error = 'Sin conexión: no se pudo crear el caso');
     } finally {
